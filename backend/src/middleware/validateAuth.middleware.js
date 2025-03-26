@@ -11,5 +11,5 @@ export const validateAuth = [
 
     body('fullName')
         .isLength({ max: 15 })
-        .withMessage('Full name maximum is 15 characters')
+        .withMessage('Full name maximum is 15 characters'),
 ]

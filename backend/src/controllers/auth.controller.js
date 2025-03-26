@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs";
-import { generateToken } from "../lib/utils.js";
+import { destroyToken, generateToken } from "../lib/utils.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -101,5 +101,19 @@ export const login = async (req, res) => {
 }
 
 export const logout = (req, res) => {
-    res.send('Logged out')
+    try {
+        destroyToken(res);
+        return res.status(200).json({
+            message: "Logged out successfully"
+        })
+    } catch (error) {
+        console.log(`Error login in controller ${error.message}`);
+        res.status(500).jso({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const updateProfile = async (req, res) => {
+    console.log('hehe');
 }

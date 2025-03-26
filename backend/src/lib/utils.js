@@ -16,3 +16,10 @@ export const generateToken = async (userId, res) => {
     })
     return token;
 }
+
+export const destroyToken = async (res) => {
+    const times = 0;
+    res.cookie("jwt", '', {
+        maxAge: times
+    })
+}
