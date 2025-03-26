@@ -126,7 +126,6 @@ export const logout = (req, res) => {
 export const updateProfile = async (req, res) => {
     const { profilePic } = req.body;
     try {
-
         // validate data
         if (!profilePic) {
             return res.status(400).json({
