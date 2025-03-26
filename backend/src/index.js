@@ -1,12 +1,14 @@
 import express from "express";
 import { connectDB } from "./lib/db.js";
-import authRoutes from './routes/auth.route.js'
+import authRoutes from './routes/auth.route.js';
+import cookieParser from "cookie-parser";
 const app = express();
 const PORT = process.env.PORT;
 
 // data from req body
 app.use(express.json());
-app.use("/api/auth", authRoutes)
+app.use(cookieParser());
+app.use("/api/auth", authRoutes);
 app.listen(PORT, () => {
     connectDB();
     console.log(`Server is running at http://localhost:${PORT}`);

@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs";
 import { destroyToken, generateToken } from "../lib/utils.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -39,12 +40,21 @@ export const signup = async (req, res) => {
             profilePic: ''
         })
 
-        await newUser.save();
-        generateToken(newUser._id, res)
-        return res.status(201).json({
-            message: 'Signed up successfully',
-            data: newUser
-        })
+        // if user moi store in db
+        if (newUser) {
+            generateToken(newUser._id, res)
+            await newUser.save();
+            return res.status(201).json({
+                message: 'Signed up successfully',
+                user: {
+                    _id: newUser._id,
+                    fullName: newUser.fullName,
+                    email: newUser.email,
+                    profilePic: newUser.profilePic,
+                }
+            })
+        }
+
     } catch (error) {
         console.log(`Error signup in controller ${error.message}`);
         res.status(500).json({
@@ -115,5 +125,55 @@ export const logout = (req, res) => {
 }
 
 export const updateProfile = async (req, res) => {
-    console.log('hehe');
+    const { profilePic } = req.body;
+    const token = req.cookies.jwt;
+    try {
+
+        // validate data
+        if (!profilePic) {
+            return res.status(400).json({
+                message: "Profile pic is required"
+            })
+        }
+
+        // check exist token
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: "Unauthorized - No token was found"
+            })
+        }
+
+        // check token valid
+        const decoded = jwt.decode(token);
+        if (!decoded) {
+            return res.status(400).json({
+                message: "Invalid token!!!"
+            })
+        }
+
+        // find user 
+        const _id = decoded._id;
+        const user = await User.findOne(_id);
+
+        // check user exist?
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found!!!"
+            })
+        }
+        req.user = user;
+
+        // authorized and update
+        const updatedProfile = await User.findByIdAndUpdate(decoded.userId, { profilePic }, { new: true }).select("-password",)
+        return res.status(200).json({
+            message: "Updated profile successfully",
+            updatedProfile: updatedProfile
+        })
+    } catch (error) {
+        console.log(`Error updateProfile in controller ${error.message}`);
+        res.status(500).jso({
+            message: "Internal Server Error"
+        })
+    }
 }
