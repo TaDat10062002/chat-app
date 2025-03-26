@@ -3,7 +3,7 @@ import User from "../models/user.model.js"
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/utils.js";
 
-export const signUp = async (req, res) => {
+export const signup = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
         // validate data
@@ -46,8 +46,47 @@ export const signUp = async (req, res) => {
             data: newUser
         })
     } catch (error) {
-        console.log(`Error signUp in controller ${error.message}`);
+        console.log(`Error signup in controller ${error.message}`);
         res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        // check email exist
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                message: "No credentials found!!!, Please check your Email"
+            })
+        }
+
+        // check password
+        const hash = user.password;
+        const isCorrectedPassword = await bcrypt.compare(password, hash);
+        if (!isCorrectedPassword) {
+            return res.status(400).json({
+                message: "Incorrect Password, Please try again"
+            })
+        }
+
+        // login
+        const _id = user._id;
+        generateToken(_id, res);
+        res.status(200).json({
+            message: "Login successfully!",
+            user: {
+                _id: user.id,
+                fullName: user.fullName,
+                profilePic: user.profilePic
+            }
+        })
+    } catch (error) {
+        console.log(`Error login in controller ${error.message}`);
+        res.status(500).jso({
             message: "Internal Server Error"
         })
     }
