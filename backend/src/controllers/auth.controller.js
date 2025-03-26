@@ -2,7 +2,6 @@ import { validationResult } from "express-validator";
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs";
 import { destroyToken, generateToken } from "../lib/utils.js";
-import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -126,7 +125,6 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
     const { profilePic } = req.body;
-    const token = req.cookies.jwt;
     try {
 
         // validate data
@@ -135,34 +133,6 @@ export const updateProfile = async (req, res) => {
                 message: "Profile pic is required"
             })
         }
-
-        // check exist token
-        if (!token) {
-            return res.status(400).json({
-                success: false,
-                message: "Unauthorized - No token was found"
-            })
-        }
-
-        // check token valid
-        const decoded = jwt.decode(token);
-        if (!decoded) {
-            return res.status(400).json({
-                message: "Invalid token!!!"
-            })
-        }
-
-        // find user 
-        const _id = decoded._id;
-        const user = await User.findOne(_id);
-
-        // check user exist?
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found!!!"
-            })
-        }
-        req.user = user;
 
         // authorized and update
         const updatedProfile = await User.findByIdAndUpdate(decoded.userId, { profilePic }, { new: true }).select("-password",)
