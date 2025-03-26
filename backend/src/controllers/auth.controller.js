@@ -4,8 +4,9 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/utils.js";
 
 export const signup = async (req, res) => {
+    const { fullName, email, password } = req.body;
+    const errors = validationResult(req);
     try {
-        const { fullName, email, password } = req.body;
         // validate data
         if (!fullName || !email || !password) {
             res.status(400).json({
@@ -13,7 +14,6 @@ export const signup = async (req, res) => {
             })
         }
 
-        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 errors: errors.array()
@@ -55,7 +55,15 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
+    const errors = validationResult(req);
     try {
+        // validate data
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                message: errors.array()
+            })
+        }
+
         // check email exist
         const user = await User.findOne({ email });
         if (!user) {
@@ -90,4 +98,8 @@ export const login = async (req, res) => {
             message: "Internal Server Error"
         })
     }
+}
+
+export const logout = (req, res) => {
+    res.send('Logged out')
 }
