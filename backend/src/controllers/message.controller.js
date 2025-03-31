@@ -6,7 +6,7 @@ export const getUsersForSidebar = async (req, res) => {
     try {
         const loggedUserId = req.user._id;
         // show all users but not the currently logged user
-        const filteredUsers = await User.find({ _id: { $ne: loggedUserId } })
+        const filteredUsers = await User.find({ _id: { $ne: loggedUserId } }).select("-password")
         return res.status(200).json({
             message: "All users in chat app",
             users: filteredUsers
