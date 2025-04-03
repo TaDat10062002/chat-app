@@ -3,9 +3,14 @@ import { useChatStore } from "../store/useChatStore";
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
+import { useAuthStore } from '../store/useAuthStore';
+import { formatVietNamTimeZone } from '../lib/utils';
+import { MessageSquare } from 'lucide-react';
 
 const ChatContainer = () => {
     const { messages, getMessages, isMessagesLoading, selectedUser } = useChatStore();
+    const { authUser } = useAuthStore();
+
     useEffect(() => {
         getMessages(selectedUser._id)
     }, [selectedUser._id])
@@ -20,6 +25,7 @@ const ChatContainer = () => {
         )
     }
 
+    console.log(messages);
     return (
         <div className='flex-1 flex flex-col overflow-auto'>
             <ChatHeader />
@@ -29,11 +35,89 @@ const ChatContainer = () => {
                         {
                             // neu ma tat ca senderId === so voi selected id thi hien thi tin nhan doi phuong
                             message.senderId === selectedUser._id ?
-                                <h1>{message.receiverId ? message.text : ''}</h1>
-                                : ''
+                                <div className='mt-5 pl-5'>
+                                    <span className='text-sm pl-12'>
+                                        {
+                                            formatVietNamTimeZone(message.createdAt)
+                                        }
+                                    </span>
+                                    <div className='flex items-center'>
+                                        {
+                                            <img src={selectedUser.profilePic} alt="" className='size-8 rounded-box' />
+                                        }
+                                        {
+                                            message.text && !message.image && <div className='chat-bubble ml-2'>{message.text}</div>
+                                        }
+                                        {
+                                            message.image && message.text === '' &&
+                                            (
+                                                <div className='ml-3'>
+                                                    <img src={message.image} className='rounded-box' alt="" />
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                    {
+                                        message.image && message.text && (
+                                            <>
+                                                <div className='ml-10'>
+                                                    {
+                                                        message.image && <img src={message.image} className='rounded-box' alt="" />
+                                                    }
+                                                </div>
+                                                <div className='chat-bubble ml-10'>
+                                                    {
+                                                        message.text && message.text
+                                                    }
+                                                </div>
+                                            </>
+                                        )
+                                    }
+                                </div >
+                                :
+                                <div className='ml-auto pr-5'>
+                                    <span className='text-sm block mt-5 text-right pr-12'>
+                                        {
+                                            formatVietNamTimeZone(message.createdAt)
+                                        }
+                                    </span>
+                                    <div className='flex flex-row-reverse items-center'>
+                                        {
+                                            // avatar
+                                            message.senderId !== selectedUser._id ? <img src={authUser.profilePic} alt="" className='size-8 rounded-box' /> : ''
+                                        }
+                                        {/* neu ma tat ca senderId khac so voi selected id thi hien thi tin nhan cua minh */}
+                                        {
+                                            message.text && !message.image &&
+                                            <div className='chat-bubble mr-2'>{message.text}</div>
+                                        }
+                                        {
+                                            message.image && message.text === '' &&
+                                            (
+                                                <div className='mr-3'>
+                                                    <img src={message.image} className='rounded-box' alt="" />
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                    {
+                                        message.image && message.text && (
+                                            <>
+                                                <div className='mr-10'>
+                                                    {
+                                                        message.image && <img src={message.image} className='rounded-box' alt="" />
+                                                    }
+                                                </div>
+                                                <div className='chat-bubble ml-auto mr-10'>
+                                                    {
+                                                        message.text
+                                                    }
+                                                </div>
+                                            </>
+                                        )
+                                    }
+                                </div >
                         }
-                        {/* neu ma tat ca senderId khac so voi selected id thi hien thi tin nhan cua minh */}
-                        <h1 className='text-right'>{message.senderId !== selectedUser._id ? message.text : ''}</h1 >
                     </>
                 )
             }
