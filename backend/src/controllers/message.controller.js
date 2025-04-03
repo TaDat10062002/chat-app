@@ -34,9 +34,7 @@ export const getMessages = async (req, res) => {
                 }
             ]
         })
-        return res.status(200).json({
-            messages: messages
-        })
+        return res.status(200).json(messages)
     } catch (error) {
         console.log(`Error in fetching users at controller ${error.message}`);
         res.status(500).json({
