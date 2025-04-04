@@ -19,7 +19,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 
-deleteAll();
+// deleteAll(); 
 
 app.listen(PORT, () => {
     connectDB();

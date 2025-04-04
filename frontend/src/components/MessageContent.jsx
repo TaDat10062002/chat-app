@@ -6,7 +6,6 @@ import { formatVietNamTimeZone } from '../lib/utils';
 const MessageContent = () => {
     const { messages, selectedUser } = useChatStore();
     const { authUser } = useAuthStore();
-
     return (
         <div className='flex flex-1 flex-col overflow-auto'>
             {

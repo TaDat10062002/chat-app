@@ -35,14 +35,29 @@ export const getMessages = async (req, res) => {
                 }
             ]
         })
-        return res.status(200).json(messages)
+
+        // xu ly giai ma text
+
+        const decodedText = messages.map(message => ({
+            text: CryptoJS.AES.decrypt(message.text, process.env.CRYPTOJS_SECRET).toString(CryptoJS.enc.Utf8)
+        }))
+
+        let mess = [];
+        for (let i = 0; i < messages.length; i++) {
+            mess.push({
+                senderId: messages[i].senderId,
+                receiverId: messages[i].receiverId,
+                text: decodedText[i].text,
+                createdAt: messages[i].createdAt,
+            });
+        }
+        return res.status(200).json({ mess: mess })
     } catch (error) {
         console.log(`Error in fetching users at controller ${error.message}`);
         res.status(500).json({
             message: "Internal Server Error"
         })
     }
-
 }
 
 export const sendMessage = async (req, res) => {
@@ -51,13 +66,13 @@ export const sendMessage = async (req, res) => {
         const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
-        const encodedText = CryptoJS.AES.encrypt(text, process.env.CRYPTOJS_SECRET).toString();
         let imageUrl;
         if (image) {
             const uploadResponse = await cloudinary.uploader.upload(image);
             imageUrl = uploadResponse.secure_url;
         }
 
+        const encodedText = CryptoJS.AES.encrypt(text, process.env.CRYPTOJS_SECRET).toString();
         const newMessage = Message({
             senderId: senderId,
             receiverId: receiverId,
@@ -66,6 +81,7 @@ export const sendMessage = async (req, res) => {
         })
 
         const message = await newMessage.save();
+
         return res.status(201).json({
             newMessage: message
         })
