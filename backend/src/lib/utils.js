@@ -23,3 +23,7 @@ export const destroyToken = async (res) => {
         maxAge: times
     })
 }
+
+export const encodedTextContent = async (text) => {
+    
+}
