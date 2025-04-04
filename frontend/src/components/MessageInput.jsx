@@ -21,12 +21,12 @@ const MessageInput = () => {
             setImagePreview(reader.result)
         };
         reader.readAsDataURL(file);
-
-        console.log(imagePreview)
     }
 
     const removeImage = () => {
         setImagePreview(null);
+        console.log(fileInputRef);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     }
 
     const handleSendMessage = async (e) => {
@@ -38,6 +38,7 @@ const MessageInput = () => {
             })
 
             setText("") // clear input form
+            setImagePreview("")
         } catch (error) {
             console.error(`Failed to send message:${error}`);
         }
