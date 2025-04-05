@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Message from '../model/message.model.js';
 export const connectDB = async (MONGO_URI) => {
     try {
         const conn = await mongoose.connect(MONGO_URI);
@@ -8,3 +9,10 @@ export const connectDB = async (MONGO_URI) => {
     }
 }
 
+export const deleteAllMessages = async () => {
+    try {
+        await Message.deleteMany({});
+    } catch (error) {
+
+    }
+}

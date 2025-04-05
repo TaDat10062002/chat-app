@@ -1,6 +1,7 @@
 import User from "../model/user.model.js"
 import Message from "../model/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import CryptoJS from "crypto-js";
 
 export const getUsersForSidebar = async (req, res) => {
     const userId = req.user._id
@@ -24,13 +25,23 @@ export const getMessages = async (req, res) => {
         const messages = await Message.find(
             {
                 $or: [
+                    // tim message cua nguoi chat
                     { senderId: senderId, receiverId: receiverId },
                     { receiverId: senderId, senderId: receiverId }
                 ]
             }
         )
+
+        const decodedMessages = messages.map((message) => ({
+            senderId: message.senderId,
+            receiverId: message.receiverId,
+            text: CryptoJS.AES.decrypt(message.text, process.env.CRYPTOJS_SECRET).toString(CryptoJS.enc.Utf8),
+            createdAt: message.createdAt,
+            updatedAt: message.updatedAt,
+        }))
+
         res.status(200).json({
-            messages
+            messages: decodedMessages
         })
     } catch (error) {
         console.log(`Error sendMessage in message controller ${error.message}`);
@@ -51,10 +62,12 @@ export const sendMessage = async (req, res) => {
             imageUrl = uploadResponse.secure_url;
         }
 
+        // ma hoa tin nhan
+        var encodedMessages = CryptoJS.AES.encrypt(text, process.env.CRYPTOJS_SECRET).toString();
         const newMessage = new Message({
             senderId: senderId,
             receiverId: receiverId,
-            text: text,
+            text: encodedMessages,
             image: imageUrl
         })
 
