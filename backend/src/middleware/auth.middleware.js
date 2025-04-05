@@ -1,20 +1,27 @@
 import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
 
-export const generateToken = (userId, res) => {
-    const time = 7 * 24 * 60 * 60 * 1000;
-    // encoded id for token
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" })
-    // set cookies
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: false,
-        maxAge: time,
-        sameSite: "strict"
-    })
-    return token;
-}
+export const protectedRoute = async (req, res, next) => {
+    const token = req.cookies.jwt;
+    try {
+        if (!token) {
+            return res.status(400).json({
+                message: "Unauthorised - Token not found"
+            })
+        }
 
-export const destroyToken = (res) => {
-    const time = 0;
-    res.cookie('jwt', '', { maxAge: time })
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded) {
+            return res.status(400).json({
+                message: "Unauthorised - Invalid token"
+            })
+        }
+
+        const userId = decoded.userId;
+        const user = await User.findById(userId).select("-password");
+        req.user = user;
+        next();
+    } catch (error) {
+        console.log(`Error in protectedRoute ${error.message}`)
+    }
 }

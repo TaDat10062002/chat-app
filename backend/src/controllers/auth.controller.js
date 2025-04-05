@@ -1,7 +1,8 @@
 import User from "../models/user.model.js";
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
-import { destroyToken, generateToken } from "../middleware/auth.middleware.js";
+import { destroyToken, generateToken } from "../lib/util.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -44,7 +45,10 @@ export const signup = async (req, res) => {
             message: "Signed up successfully"
         })
     } catch (error) {
-
+        console.log(`Error updateProfile in auth controller`);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
     }
 }
 
@@ -95,7 +99,10 @@ export const login = async (req, res) => {
         })
 
     } catch (error) {
-
+        console.log(`Error updateProfile in auth controller`);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
     }
 }
 
@@ -106,6 +113,48 @@ export const logout = async (req, res) => {
             message: 'Logged out successfully'
         })
     } catch (error) {
+        console.log(`Error updateProfile in auth controller`);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
 
+export const updateProfile = async (req, res) => {
+    const { profilePic } = req.body;
+    const userId = req.user._id
+    try {
+        if (!profilePic) {
+            return res.status(400).json({
+                message: "Profile pic is required"
+            })
+        }
+
+        // cloudinary
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        const updatedUser = await User.findByIdAndUpdate(userId, { profilePic: uploadResponse.secure_url }, { new: true }).select("-password");
+        res.status(200).json({
+            message: "Updated user profile successfully",
+            updatedUser
+        })
+    } catch (error) {
+        console.log(`Error updateProfile in auth controller`);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export const check = async (req, res) => {
+    const user = req.user;
+    try {
+        res.status(200).json({
+            user
+        })
+    } catch (error) {
+        console.log(`Error updateProfile in auth controller`);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
     }
 }
