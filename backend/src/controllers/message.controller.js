@@ -23,19 +23,18 @@ export const getMessage = async (req, res) => {
     const senderId = req.user._id;
     const receiverId = req.params.id;
     try {
+        // hoac la tim tin nhan của mình hoặc là của ngta tới mình
         const messages = await Message.find({
             $or: [
-                // tim tin nhan minh sent nguoi ta va nguoc lai
                 { senderId: senderId, receiverId: receiverId },
-                // tim tin nhan nguoi khac goi den minh
                 { senderId: receiverId, receiverId: senderId }
             ]
         })
 
         // decoded tin nhan api cho FE
         const decodedMessage = messages.map((message) => ({
-            senderId: senderId,
-            receiverId: receiverId,
+            senderId: message.senderId,
+            receiverId: message.receiverId,
             text: CryptoJS.AES.decrypt(message.text, process.env.CRYPTOJS_SECRET).toString(CryptoJS.enc.Utf8),
             image: message.image
         }))
@@ -55,7 +54,6 @@ export const sendMessage = async (req, res) => {
     const { text, image } = req.body;
     const senderId = req.user._id;
     const receiverId = req.params.id;
-    console.log(senderId, receiverId);
     try {
         let imageUrl;
         if (image) {
@@ -64,6 +62,7 @@ export const sendMessage = async (req, res) => {
         }
 
         // ma hoa tin nhan nguoi dung
+        console.log(process.env.CRYPTOJS_SECRET);
         const encodedText = CryptoJS.AES.encrypt(text, process.env.CRYPTOJS_SECRET);
         const newMessage = new Message({
             senderId: senderId,
@@ -71,8 +70,10 @@ export const sendMessage = async (req, res) => {
             text: encodedText,
             image: imageUrl
         })
-
         await newMessage.save();
+
+        // fix vu khi nguoi dung chat se bi ma hoa
+        newMessage.text = text;
         res.status(201).json(
             newMessage
         )

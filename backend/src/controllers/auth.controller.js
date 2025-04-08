@@ -135,7 +135,7 @@ export const updateProfile = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(userId, { profilePic: uploadResponse.secure_url }, { new: true }).select("-password");
         res.status(200).json({
             message: "Updated user profile successfully",
-            updatedUser
+            user: updatedUser
         })
     } catch (error) {
         console.log(`Error updateProfile in auth controller`);
