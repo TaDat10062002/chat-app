@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import cors from "cors";
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
-const app = express();
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.MONGODB_URI;
 // Enable CORS for all routes and origins
@@ -28,7 +28,7 @@ app.use("/api/messages", messageRoutes);
 
 // deleteMessages();
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB(MONGODB_URI);
     console.log(`Server is running at http://localhost:${PORT}`);
 })

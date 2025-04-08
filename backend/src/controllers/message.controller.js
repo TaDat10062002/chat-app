@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import Message from "../models/message.model.js";
 import CryptoJS from "crypto-js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUsersForSidebar = async (req, res) => {
     const loggedUserId = req.user._id;
@@ -74,6 +75,11 @@ export const sendMessage = async (req, res) => {
 
         // fix vu khi nguoi dung chat se bi ma hoa
         newMessage.text = text;
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
+
         res.status(201).json(
             newMessage
         )

@@ -1,20 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
-
 const ChatContainer = () => {
-  const { getMessages, isMessageLoading, selectedUser, messages } =
-    useChatStore();
-
+  const { getMessages, isMessageLoading, selectedUser, messages, subsribeToMessages, unsubcribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null);
 
   // const [image, setImage] = useState(null);
   useEffect(() => {
     getMessages(selectedUser._id);
-  }, [selectedUser._id, getMessages]);
+    subsribeToMessages();
+    return () => unsubcribeFromMessages();
+  }, [selectedUser._id, getMessages, subsribeToMessages, unsubcribeFromMessages]);
 
   if (isMessageLoading) {
     return (
@@ -26,6 +26,12 @@ const ChatContainer = () => {
     );
   }
 
+  // useEffect(() => {
+  //   if (messageEndRef.current && messages) {
+  //     messageEndRef.current.scrollIntoView({ behavior: "smooth" })
+  //   }
+  // }, [messages])
+
   return (
     <div className="flex-1 flex flex-col overflow-auto">
       <ChatHeader />
@@ -35,9 +41,10 @@ const ChatContainer = () => {
             class={`chat ${message.receiverId === selectedUser._id ? "chat-end" : "chat-start"
               }`}
             key={index}
+            ref={messageEndRef}
           >
             <div class="chat-image avatar">
-              <div class="w-10 rounded-full">
+              <div class="w-10 rounded-full border">
                 <img
                   alt="Tailwind CSS chat bubble component"
                   src={

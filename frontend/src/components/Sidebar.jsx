@@ -15,7 +15,7 @@ const Sidebar = () => {
     getUsers();
   }, [getUsers]);
 
-  // const setShowOnlineOnly = (e) => {};
+  const filterdUsers = showOnlineOnly ? users.filter(user => onlineUsers.includes(user._id)) : users;
 
   if (isUserLoading) return <SidbarSkeleton />;
 
@@ -44,7 +44,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {users.map((user) => (
+      {filterdUsers.map((user) => (
         <button
           key={user._id}
           onClick={() => setSelectedUser(user)}
@@ -81,7 +81,7 @@ const Sidebar = () => {
         </button>
       ))}
 
-      {users.length === 0 && (
+      {filterdUsers.length === 0 && (
         <div className="text-center text-zinc-500 py-4">No online users</div>
       )}
     </aside>
