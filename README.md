@@ -1,3 +1,4 @@
+
 # 💬 Chat App
 
 A **Realtime Chat Application** built with **NodeJS** (backend) and **ReactJS** (frontend), featuring authentication, file upload, and real-time messaging using **Socket.io**.
