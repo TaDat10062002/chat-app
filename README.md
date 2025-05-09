@@ -1,7 +1,16 @@
-
 # 💬 Chat App
 
 A **Realtime Chat Application** built with **NodeJS** (backend) and **ReactJS** (frontend), featuring authentication, file upload, and real-time messaging using **Socket.io**.
+
+<div align="left">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React" width="40" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vite/vite-original.svg" alt="ViteJS" width="40" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="NodeJS" width="40" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="MongoDB" width="40" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript" width="40" />
+</div>
+
+---
 
 ## 🚀 Features
 
@@ -33,11 +42,11 @@ A **Realtime Chat Application** built with **NodeJS** (backend) and **ReactJS** 
 
 ## 🛠 Tech Stack
 
-| Layer       | Technologies                                                     |
-|-------------|------------------------------------------------------------------|
-| **Frontend**| ReactJS, Zustand, Vite, TailwindCSS, DaisyUI, Lucide-react       |
-| **Backend** | NodeJS, ExpressJS, MongoDB (Mongoose), Socket.io, Cloudinary     |
-| **Others**  | JWT, bcryptjs, express-validator, crypto-js, dotenv, axios       |
+| Layer       | Technologies                                                                                          |
+|-------------|-------------------------------------------------------------------------------------------------------|
+| **Frontend**| ReactJS, Zustand, Vite, TailwindCSS, DaisyUI, Lucide-react                                           |
+| **Backend** | NodeJS, ExpressJS, MongoDB (Mongoose), Socket.io, Cloudinary                                         |
+| **Others**  | JWT, bcryptjs, express-validator, crypto-js, dotenv, axios                                           |
 
 ---
 
@@ -109,3 +118,7 @@ chat-app/
 **Tạ Linh Đạt**  
 📧 talinhdat03@gmail.com  
 🔗 [GitHub](https://github.com/TaDat10062002)
+
+---
+
+✅ **Tech Highlights**: ReactJS • ViteJS • NodeJS • ExpressJS • MongoDB • Socket.io • Zustand • TailwindCSS • Cloudinary
